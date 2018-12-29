@@ -350,10 +350,8 @@ public class Binarytreeuse {
 	      return output;
 	  }
 	
-public static void printLevelWise(Binarytreenode<Integer> root){
-		
-		// Write your code here
-      
+	//Level order traversal	
+	public static void printLevelWise(Binarytreenode<Integer> root){
       QueueLL<Binarytreenode<Integer>> pending=new QueueLL<>();
       pending.enqueue(root);
       pending.enqueue(null);
@@ -376,7 +374,6 @@ public static void printLevelWise(Binarytreenode<Integer> root){
           }
           else
           {
-           // Binarytreenode<Integer> delete=pending.dequeue();
             System.out.println();
             if(pending.size()!=0)
             pending.enqueue(null);
@@ -386,14 +383,13 @@ public static void printLevelWise(Binarytreenode<Integer> root){
         }
         catch(QueueEmptyException1 e)
         {
-          //return null;
         	e.printStackTrace();
         }}
       }
 
 	public static void main(String[] args) {
 		
-		Scanner s=new Scanner(System.in);
+		//Scanner s=new Scanner(System.in);
 		//Binarytreenode<Integer> root=takeinput(s);
 	    //print(root);
 		Binarytreenode<Integer> root=inputLevel();
