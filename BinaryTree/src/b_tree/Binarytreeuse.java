@@ -1,6 +1,8 @@
 package b_tree;
 
 import java.util.Scanner;
+import java.util.Stack;
+import java.util.ArrayList;
 
 public class Binarytreeuse {
 	
@@ -177,6 +179,51 @@ public class Binarytreeuse {
 		
 		mirror(root.left);
 		mirror(root.right);
+	}
+	
+	//Check if a binary tree is BST
+	public static Triplet<Boolean,Integer,Integer> isBST(Binarytreenode<Integer> root)
+	{
+		if(root==null)
+		{
+			Triplet<Boolean,Integer,Integer> output=new Triplet<>();
+			output.first=true;
+			output.second=Integer.MAX_VALUE;
+			output.third=Integer.MIN_VALUE;
+			return output;
+		}
+		
+		Triplet<Boolean,Integer,Integer> leftop=isBST(root.left);
+		Triplet<Boolean,Integer,Integer> rightop=isBST(root.right);
+		
+		int min=Math.min(root.data, Math.min(leftop.second, rightop.second));
+		int max=Math.max(root.data, Math.max(leftop.third, rightop.third));
+		
+		boolean isBST2=(leftop.first&&
+				(root.data>leftop.third&&root.data<rightop.second)
+				&&rightop.first);
+		
+		Triplet<Boolean,Integer,Integer> output=new Triplet<>();
+		output.first=isBST2;
+		output.second=min;
+		output.third=max;
+		return output;
+	}
+	
+	public static boolean isBST3(Binarytreenode<Integer> root,int min, int max)
+	{
+		if(root==null)
+		{
+			return true;
+		}
+		
+		if(root.data<min||root.data>max)
+			return false;
+		
+		boolean isleftBST=isBST3(root.left,min,root.data-1);
+		boolean isrightBST=isBST3(root.right,root.data,max);
+		
+		return isleftBST && isrightBST;
 	}
 	
 	//function to check if node is present or not
@@ -386,6 +433,258 @@ public class Binarytreeuse {
         	e.printStackTrace();
         }}
       }
+	
+	//remove leaf node
+	public static Binarytreenode<Integer> removeAllLeaves(Binarytreenode<Integer> root){
+		
+      if(root==null)
+      {
+        return null;
+      }
+      
+      if(root.left==null&&root.right==null)
+      {
+        root=null;
+        return root;
+      }
+      
+      root.left=removeAllLeaves(root.left);
+      root.right=removeAllLeaves(root.right);
+      
+      return root;
+      
+	}
+	
+	//Level wise LinkedList
+	public static ArrayList<Node<Binarytreenode<Integer>>> LLForEachLevel(Binarytreenode<Integer> root) {
+		
+		// Write your code here
+      
+      QueueLL<Binarytreenode<Integer>> q=new QueueLL<>();
+      q.enqueue(root);
+      q.enqueue(null);
+      Node<Binarytreenode<Integer>> head=null,tail=null;
+      ArrayList<Node<Binarytreenode<Integer>>> output=new ArrayList<>();
+      
+      while(!q.isEmpty())
+      {
+        try
+        {
+          Binarytreenode<Integer> current=q.dequeue();
+          if(current!=null)
+          {
+            Node<Binarytreenode<Integer>> ll=new Node<>(current);
+            if(head==null)
+            {
+              head=ll;
+              tail=ll;
+            }
+            else
+            {
+              tail.next=ll;
+              tail=tail.next;
+            }
+            if(current.left!=null)
+              q.enqueue(current.left);
+            if(current.right!=null)
+              q.enqueue(current.right);
+          }
+          if(current==null)
+          {
+            
+            output.add(head);
+            head=null;
+            tail=null;
+            if(q.size()!=0)
+            {
+              q.enqueue(null);
+            }
+          }
+          
+        }
+        catch(QueueEmptyException1 e)
+        {
+          
+        }
+      }
+      
+      return output;
+
+	}
+	
+	//Print tree in spiral form(zigzag)
+	public static void printZigZag(Binarytreenode<Integer> root) {
+		
+        if(root==null)
+        {
+        	return;
+        }
+        
+        Stack<Binarytreenode<Integer>> s1=new Stack<>();
+        Stack<Binarytreenode<Integer>> s2=new Stack<>();
+        
+        s1.push(root);
+        
+        while(!s1.isEmpty()||!s2.isEmpty())
+        {
+          
+          while(!s2.isEmpty())
+            {
+            	Binarytreenode<Integer> temp=s2.peek();
+                s2.pop();
+                System.out.print(temp.data+" ");
+            
+            	if(temp.right!=null)
+                s1.push(temp.right);
+                
+                if(temp.left!=null)
+                s1.push(temp.left);
+                
+                
+            }
+          System.out.println();
+        	while(!s1.isEmpty())
+            {
+            	Binarytreenode<Integer> temp=s1.peek();
+                s1.pop();
+                System.out.print(temp.data+" ");
+                
+                if(temp.left!=null)
+                s2.push(temp.left);
+                
+                if(temp.right!=null)
+                s2.push(temp.right);
+            }
+            
+            System.out.println();
+            
+            
+        }
+	}
+	
+	//nodes without sibling
+	public static void printNodesWithoutSibling(Binarytreenode<Integer> root) {
+		
+      if(root==null)
+      {
+        return;
+      }
+      
+      if((root.left==null&&root.right!=null)||(root.left!=null&&root.right==null))
+      {
+        if(root.left!=null)
+        {
+          System.out.println(root.left.data);
+        }
+        else
+         System.out.println(root.right.data); 
+      }
+      
+      printNodesWithoutSibling(root.left);
+      printNodesWithoutSibling(root.right);
+
+	}
+	
+	//Sorted array to balanced BST
+	public static Binarytreenode<Integer> SArray2BST(int[] arr, int si, int ei)
+    {
+      if(si>ei)
+      {
+        return null;
+      }
+      
+      int mid=(si+ei)/2;
+      
+      Binarytreenode<Integer> root=new Binarytreenode<>(arr[mid]);
+      root.left=SArray2BST(arr,si,mid-1);
+      root.right=SArray2BST(arr,mid+1,ei);
+      
+      return root;
+    }
+	
+	//find root to node path
+	public static ArrayList<Integer> root2node(Binarytreenode<Integer> root,int k)
+	{
+		if(root==null)
+		{
+			return null;
+		}
+		
+		if(root.data==k)
+		{
+			ArrayList<Integer> op=new ArrayList<>();
+			op.add(root.data);
+			return op;
+		}
+		ArrayList<Integer> lo=root2node(root.left,k);
+		if(lo!=null)
+		{
+			lo.add(root.data);
+			return lo;
+		}
+		
+		ArrayList<Integer> ro=root2node(root.right,k);
+		if(ro!=null)
+		{
+			ro.add(root.data);
+			return ro;
+		}
+		
+		else
+			return null;
+	}
+	
+	//BST to linked list
+	private static Pair3<LinkedListNode<Integer>,LinkedListNode<Integer>> Bst2ll(Binarytreenode<Integer> root)
+	  {
+	    if(root==null)
+	    {
+	      Pair3<LinkedListNode<Integer>,LinkedListNode<Integer>> output =new Pair3<>();
+	      output.first=null;
+	      output.second=null;
+	      return output;
+	    }
+	    
+	    Pair3<LinkedListNode<Integer>,LinkedListNode<Integer>> leftll=Bst2ll(root.left);
+	    LinkedListNode<Integer> middlell=new LinkedListNode<>(root.data);
+	    Pair3<LinkedListNode<Integer>,LinkedListNode<Integer>> rightll=Bst2ll(root.right);
+	    
+	    Pair3<LinkedListNode<Integer>,LinkedListNode<Integer>> output =new Pair3<>();
+	    if(leftll.first!=null)
+	    {
+	      output.first=leftll.first;
+	      output.second=leftll.second;
+	      output.second.next=middlell;
+	      output.second=output.second.next;
+	      if(rightll.first==null)
+	      {
+	        return output;
+	      }
+	    }
+	    if(leftll.first!=null&&rightll.first!=null)
+	    {
+	      output.second.next=rightll.first;
+	      output.second=rightll.second;
+	      return output;
+	    }
+	    if(leftll.first==null&&rightll.first!=null)
+	    {
+	      output.first=middlell;
+	      middlell.next=rightll.first;
+	      output.second=rightll.second;
+	      return output;
+	    }
+	    else
+	    {
+	      output.first=middlell;
+	      output.second=middlell;
+	      return output;
+	      
+	    }
+	    
+	    
+	  }
+
 
 	public static void main(String[] args) {
 		
@@ -393,6 +692,7 @@ public class Binarytreeuse {
 		//Binarytreenode<Integer> root=takeinput(s);
 	    //print(root);
 		Binarytreenode<Integer> root=inputLevel();
+		
 		printLevelWise(root);
 		//print(root);
 		//printlevel(root);
@@ -409,6 +709,16 @@ public class Binarytreeuse {
 		}
 		Binarytreenode<Integer> root = premakeTree(pre,in,0,pre.length-1,0,in.length-1);
 		printlevel(root);*/
+		
+		/*ArrayList<Node<Binarytreenode<Integer>>> output = LLForEachLevel(root);
+		for(Node<Binarytreenode<Integer>> head : output){
+			Node<Binarytreenode<Integer>> temp = head;
+			while(temp != null){
+				System.out.print(temp.data.data + " ") ;
+				temp = temp.next;
+			}
+			System.out.println();
+		}*/
 		
 		
 
